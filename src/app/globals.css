@@ -1,2 +1,27 @@
 @import "tailwindcss";
 @import "@heroui/styles";
+
+
+/* Navbar Style */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.logo-animation {
+  animation: float 3s ease-in-out infinite;
+}
