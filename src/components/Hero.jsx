@@ -26,7 +26,7 @@ export default function Hero() {
                 />
 
                 {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-linear-to-b from-black/75 via-zinc-950/80 to-black"></div>
+                <div className="absolute inset-0 bg-linear-to-b from-black/10 via-black/20 to-black/30"></div>
 
             </div>
 
@@ -222,7 +222,7 @@ export default function Hero() {
 
                     {/* Heading */}
 
-                    <div className="mb-14 text-center">
+                    <div className="mb-16 text-center">
 
                         <h2 className="text-3xl font-semibold leading-relaxed text-white md:text-5xl">
 
@@ -244,7 +244,7 @@ export default function Hero() {
 
                     {/* Cards */}
 
-                    <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 md:mx-4">
 
                         {/* Card */}
 
