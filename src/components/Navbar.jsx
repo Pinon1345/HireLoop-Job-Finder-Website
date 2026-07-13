@@ -138,7 +138,7 @@ export default function Navbar() {
 
                         <Link
                             href="/post-job"
-                            className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                            className="rounded-full bg-linear-to-r from-sky-500 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
                         >
                             GET STARTED
                         </Link>
@@ -159,7 +159,7 @@ export default function Navbar() {
 
                 {/* MOBILE MENU */}
                 <div
-                    className={`overflow-hidden transition-all duration-500 lg:hidden ${mobileMenu ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                    className={`overflow-hidden transition-all duration-500 lg:hidden ${mobileMenu ? "max-h-150 opacity-100" : "max-h-0 opacity-0"
                         }`}
                 >
                     <div className="mx-auto mt-3 w-[95%] max-w-7xl rounded-3xl border border-white/10 bg-zinc-950/90 p-5 backdrop-blur-xl">
