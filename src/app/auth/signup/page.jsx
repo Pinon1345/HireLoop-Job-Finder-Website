@@ -10,7 +10,10 @@ import {
     Separator,
     TextField,
     Label,
-    InputGroup
+    InputGroup,
+    Description,
+    Radio,
+    RadioGroup
 } from "@heroui/react";
 import {
     FaEye,
@@ -32,6 +35,7 @@ export default function SignUp() {
         imageUrl: "",
         email: "",
         password: "",
+        role: "seeker",
     });
 
     // Form error state for micro-validations
@@ -46,6 +50,7 @@ export default function SignUp() {
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     // Live Inline Validation Handler
+
     const validateField = (name, value) => {
         let errorMsg = "";
 
@@ -84,6 +89,7 @@ export default function SignUp() {
         e.preventDefault();
 
         // Run final check verification on submit
+
         const emailErr = validateField("email", formData.email);
         const passwordErr = validateField("password", formData.password);
 
@@ -96,11 +102,13 @@ export default function SignUp() {
 
         try {
             // Updated directly to official structural authClient SDK invocation
+
             const { data, error } = await authClient.signUp.email({
                 email: formData.email,
                 password: formData.password,
                 name: formData.name,
                 image: formData.imageUrl || undefined,
+                role: formData.role
             });
 
             if (error) {
@@ -110,6 +118,7 @@ export default function SignUp() {
             toast.success("Account created successfully! Redirecting...");
 
             // FIX: Wait a moment for the session to be set, then redirect
+
             setTimeout(() => {
                 router.push("/");
             }, 500);
@@ -148,7 +157,9 @@ export default function SignUp() {
 
                     {/* Form */}
                     <form onSubmit={handleSignUp} className="flex flex-col gap-6" noValidate>
+
                         {/* Full Name Input */}
+
                         <TextField isRequired className="w-full flex flex-col gap-1.5">
                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</Label>
                             <InputGroup className="flex items-center border border-gray-300 dark:border-zinc-700 rounded-xl px-3 bg-transparent focus-within:ring-2 focus-within:ring-primary">
@@ -165,6 +176,7 @@ export default function SignUp() {
                         </TextField>
 
                         {/* Profile Image URL Input */}
+
                         <TextField className="w-full flex flex-col gap-1.5">
                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image URL</Label>
                             <InputGroup className="flex items-center border border-gray-300 dark:border-zinc-700 rounded-xl px-3 bg-transparent focus-within:ring-2 focus-within:ring-primary">
@@ -181,6 +193,7 @@ export default function SignUp() {
                         </TextField>
 
                         {/* Email Input */}
+
                         <TextField isRequired isInvalid={!!errors.email} className="w-full flex flex-col gap-1.5">
                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</Label>
                             <InputGroup className={`flex items-center border rounded-xl px-3 bg-transparent focus-within:ring-2 ${errors.email ? 'border-danger focus-within:ring-danger' : 'border-gray-300 dark:border-zinc-700 focus-within:ring-primary'}`}>
@@ -200,6 +213,7 @@ export default function SignUp() {
                         </TextField>
 
                         {/* Password Input */}
+
                         <TextField isRequired isInvalid={!!errors.password} className="w-full flex flex-col gap-1.5">
                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</Label>
                             <InputGroup className={`flex items-center border rounded-xl px-3 bg-transparent focus-within:ring-2 ${errors.password ? 'border-danger focus-within:ring-danger' : 'border-gray-300 dark:border-zinc-700 focus-within:ring-primary'}`}>
@@ -225,6 +239,38 @@ export default function SignUp() {
                                 <span className="text-xs text-red-500 pl-1 mt-0.5">{errors.password}</span>
                             )}
                         </TextField>
+
+                        {/* Select Role */}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, role: "seeker" }))}
+                                className={`rounded-xl border p-4 transition ${formData.role === "seeker"
+                                        ? "border-sky-500 bg-sky-500/10"
+                                        : "border-zinc-700"
+                                    }`}
+                            >
+                                <h3 className="font-semibold">👤 Job Seeker</h3>
+                                <p className="text-sm text-zinc-500">
+                                    Apply for jobs and manage applications.
+                                </p>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, role: "recruiter" }))}
+                                className={`rounded-xl border p-4 transition ${formData.role === "recruiter"
+                                        ? "border-sky-500 bg-sky-500/10"
+                                        : "border-zinc-700"
+                                    }`}
+                            >
+                                <h3 className="font-semibold">💼 Recruiter</h3>
+                                <p className="text-sm text-zinc-500">
+                                    Post jobs and manage candidates.
+                                </p>
+                            </button>
+                        </div>
 
                         {/* Submit Button */}
                         <Button

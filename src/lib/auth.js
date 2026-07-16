@@ -24,4 +24,15 @@ export const auth = betterAuth({
     database: mongodbAdapter(db, {
         client,
     }),
+
+    // Implement ROLE
+
+    user: {
+        additionalFields: {
+            role: {
+                default: "seeker",
+            }
+        }
+    }
+
 });

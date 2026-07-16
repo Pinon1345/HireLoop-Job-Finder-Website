@@ -36,7 +36,7 @@ export default function Navbar() {
     const pathname = usePathname();
 
     const { data: session, isPending } = useSession()
-    // console.log("Session data in Navbar:", session, "isPending:", isPending)
+    console.log("Session data in Navbar:", session, "isPending:", isPending)
     const user = session?.user
 
     const [mobileMenu, setMobileMenu] = useState(false);
