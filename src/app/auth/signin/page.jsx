@@ -16,25 +16,20 @@ import {
     FaEye,
     FaEyeSlash,
     FaGoogle,
-    FaUser,
     FaEnvelope,
-    FaLock,
-    FaImage
+    FaLock
 } from "react-icons/fa";
 import { toast, Toaster } from "react-hot-toast";
-import { authClient } from "@/lib/auth-client"; // Kept authClient import for social auth
+import { authClient } from "@/lib/auth-client"; // Adjust path to your client file
 
-export default function SignUp() {
+export default function SignIn() {
     const router = useRouter();
 
     const [formData, setFormData] = useState({
-        name: "",
-        imageUrl: "",
         email: "",
         password: "",
     });
 
-    // Form error state for micro-validations
     const [errors, setErrors] = useState({
         email: "",
         password: "",
@@ -61,8 +56,6 @@ export default function SignUp() {
         if (name === "password") {
             if (!value) {
                 errorMsg = "Password is required.";
-            } else if (value.length < 8) {
-                errorMsg = "Password must be at least 8 characters long.";
             }
         }
 
@@ -80,10 +73,11 @@ export default function SignUp() {
         }
     };
 
-    const handleSignUp = async (e) => {
+    // CORRECT BETTER-AUTH MONGO LOGIN PIPELINE
+    const handleSignIn = async (e) => {
         e.preventDefault();
 
-        // Run final check verification on submit
+        // Run final validation check on submit
         const emailErr = validateField("email", formData.email);
         const passwordErr = validateField("password", formData.password);
 
@@ -95,24 +89,21 @@ export default function SignUp() {
         setIsLoading(true);
 
         try {
-            // Updated directly to official structural authClient SDK invocation
-            const { data, error } = await authClient.signUp.email({
+            // Official BetterAuth client SDK signin method
+            const { data, error } = await authClient.signIn.email({
                 email: formData.email,
                 password: formData.password,
-                name: formData.name,
-                image: formData.imageUrl || undefined,
             });
 
             if (error) {
-                throw new Error(error.message || "Failed to create account.");
+                throw new Error(error.message || "Invalid email or password.");
             }
 
-            toast.success("Account created successfully! Redirecting...");
+            toast.success("Signed in successfully!");
 
-            // FIX: Wait a moment for the session to be set, then redirect
-            setTimeout(() => {
-                router.push("/");
-            }, 500);
+            // Refresh the router so the session is re-fetched
+            router.refresh();
+            router.push("/");
 
         } catch (error) {
             toast.error(error.message);
@@ -121,6 +112,7 @@ export default function SignUp() {
         }
     };
 
+    // CORRECT BETTER-AUTH GOOGLE OAUTH PIPELINE
     const handleGoogleSignIn = async () => {
         try {
             await authClient.signIn.social({
@@ -134,51 +126,23 @@ export default function SignUp() {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-zinc-900">
+
+            {/* Toast Notification Container */}
             <Toaster position="top-center" reverseOrder={false} />
 
             <Card className="w-full max-w-2xl p-4 shadow-lg border-2 border-gray-800 shadow-blue-800">
                 <Card.Content className="flex flex-col gap-5">
+
                     {/* Header */}
                     <div className="text-center">
                         <h1 className="text-4xl font-bold tracking-tight text-primary mt-2 text-blue-600">Hireloop</h1>
                         <p className="mt-2 mb-2 text-sm text-gray-500 dark:text-gray-400">
-                            Create your account to find your dream job
+                            Welcome back! Sign in to your account
                         </p>
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSignUp} className="flex flex-col gap-6" noValidate>
-                        {/* Full Name Input */}
-                        <TextField isRequired className="w-full flex flex-col gap-1.5">
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</Label>
-                            <InputGroup className="flex items-center border border-gray-300 dark:border-zinc-700 rounded-xl px-3 bg-transparent focus-within:ring-2 focus-within:ring-primary">
-                                <FaUser className="text-default-400 mr-2 shrink-0" />
-                                <Input
-                                    type="text"
-                                    name="name"
-                                    placeholder="John Doe"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full bg-transparent py-2 outline-none text-sm"
-                                />
-                            </InputGroup>
-                        </TextField>
-
-                        {/* Profile Image URL Input */}
-                        <TextField className="w-full flex flex-col gap-1.5">
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Profile Image URL</Label>
-                            <InputGroup className="flex items-center border border-gray-300 dark:border-zinc-700 rounded-xl px-3 bg-transparent focus-within:ring-2 focus-within:ring-primary">
-                                <FaImage className="text-default-400 mr-2 shrink-0" />
-                                <Input
-                                    type="url"
-                                    name="imageUrl"
-                                    placeholder="https://example.com/avatar.jpg"
-                                    value={formData.imageUrl}
-                                    onChange={handleChange}
-                                    className="w-full bg-transparent py-2 outline-none text-sm"
-                                />
-                            </InputGroup>
-                        </TextField>
+                    <form onSubmit={handleSignIn} className="flex flex-col gap-6" noValidate>
 
                         {/* Email Input */}
                         <TextField isRequired isInvalid={!!errors.email} className="w-full flex flex-col gap-1.5">
@@ -233,7 +197,7 @@ export default function SignUp() {
                             className="w-full font-semibold mt-2 transition-all duration-300 ease-in-out hover:scale-[1.02] hover:-translate-y-0.5"
                             isLoading={isLoading}
                         >
-                            Sign Up
+                            Sign In
                         </Button>
                     </form>
 
@@ -254,14 +218,14 @@ export default function SignUp() {
                         Google
                     </Button>
 
-                    {/* Navigation to Sign In */}
+                    {/* Navigation to Sign Up */}
                     <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
-                        Already have an account?{" "}
+                        Do not have an account yet?{" "}
                         <Link
-                            href="/auth/signin"
+                            href="/auth/signup"
                             className="font-semibold text-primary hover:underline transition-all text-blue-600"
                         >
-                            Sign In
+                            Sign Up
                         </Link>
                     </p>
                 </Card.Content>

@@ -9,7 +9,44 @@ import {
     HiStar,
 } from "react-icons/hi2";
 
+import { motion } from "motion/react"
+
 export default function Hero() {
+
+    const transition = {
+        duration: 0.8,
+        delay: 0.5,
+        ease: [0, 0.71, 0.2, 1.01],
+    }
+
+    // 1. Parent Container Animation Configuration
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15, // The delay (in seconds) between each card's entry
+            },
+        },
+    };
+
+    // 2. Individual Card Animation Configuration
+    const cardVariants = {
+        hidden: {
+            opacity: 0,
+            y: 30 // Start 30px lower
+        },
+        show: {
+            opacity: 1,
+            y: 0, // Move up to its original position
+            transition: {
+                type: "spring",
+                stiffness: 100,
+                damping: 15,
+            },
+        },
+    };
+
     return (
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
 
@@ -55,7 +92,17 @@ export default function Hero() {
 
                 {/* Announcement Badge */}
 
-                <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-3 backdrop-blur-xl mt-8">
+                <motion.div
+
+                    whileHover={{
+                        scale: 1.1,
+                        // Will be used when gesture starts
+                        transition: { duration: 0.1 }
+                    }}
+                    // Will be used when gesture ends
+                    transition={{ duration: 0.5 }}
+
+                    className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-3 backdrop-blur-xl mt-8">
 
                     <div className="rounded-full bg-orange-500/20 p-2">
 
@@ -73,11 +120,14 @@ export default function Hero() {
 
                     </p>
 
-                </div>
+                </motion.div>
 
                 {/* Heading */}
 
-                <h1 className="mt-10 max-w-5xl text-5xl font-black leading-tight text-white md:text-6xl lg:text-7xl">
+                <motion.h1
+                    animate={{ rotate: 360 }}
+                    transition={transition}
+                    className="mt-10 max-w-5xl text-5xl font-black leading-tight text-white md:text-6xl lg:text-7xl">
 
                     Find Your
 
@@ -87,7 +137,7 @@ export default function Hero() {
 
                     </span>
 
-                </h1>
+                </motion.h1>
 
                 {/* Description */}
 
@@ -101,7 +151,7 @@ export default function Hero() {
 
                 </p>
 
-                {/* Search Bar will start here in Part 2 */}
+                {/* Search Bar */}
                 {/* Search Box */}
 
                 <div className="mt-14 w-full max-w-5xl">
@@ -213,8 +263,6 @@ export default function Hero() {
 
                 </div>
 
-                {/* Statistics will start in Part 3 */}
-
 
                 {/* Statistics */}
 
@@ -242,13 +290,20 @@ export default function Hero() {
 
                     </div>
 
-                    {/* Cards */}
+                    {/* Cards Container */}
 
-                    <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 md:mx-4">
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.1 }} // Keeps viewport hook fast and precise
+                        className="grid grid-cols-2 gap-5 lg:grid-cols-4 md:mx-4">
 
-                        {/* Card */}
+                        {/* Card 1 */}
 
-                        <div className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
+                        <motion.div
+                            variants={cardVariants} // Connects individual animation configuration
+                            className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
 
                             <HiBriefcase className="mb-10 text-2xl text-slate-400 transition group-hover:text-sky-400" />
 
@@ -270,11 +325,13 @@ export default function Hero() {
 
                             </p>
 
-                        </div>
+                        </motion.div>
 
-                        {/* Card */}
+                        {/* Card 2 */}
 
-                        <div className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
+                        <motion.div
+                            variants={cardVariants} // Connects individual animation configuration
+                            className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
 
                             <HiBuildingOffice2 className="mb-10 text-2xl text-slate-400 transition group-hover:text-sky-400" />
 
@@ -296,11 +353,13 @@ export default function Hero() {
 
                             </p>
 
-                        </div>
+                        </motion.div>
 
-                        {/* Card */}
+                        {/* Card 3 */}
 
-                        <div className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
+                        <motion.div
+                            variants={cardVariants} // Connects individual animation configuration
+                            className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-sky-500/30 hover:bg-white/10">
 
                             <HiUsers className="mb-10 text-2xl text-slate-400 transition group-hover:text-sky-400" />
 
@@ -323,11 +382,13 @@ export default function Hero() {
 
                             </p>
 
-                        </div>
+                        </motion.div>
 
-                        {/* Card */}
+                        {/* Card 4 */}
 
-                        <div className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-orange-500/30 hover:bg-white/10">
+                        <motion.div
+                            variants={cardVariants} // Connects individual animation configuration
+                            className="group rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-orange-500/30 hover:bg-white/10">
 
                             <HiStar className="mb-10 text-2xl text-slate-400 transition group-hover:text-orange-400" />
 
@@ -349,12 +410,11 @@ export default function Hero() {
 
                             </p>
 
-                        </div>
+                        </motion.div>
 
-                    </div>
+                    </motion.div>
 
                 </div>
-
 
 
                 {/* Scroll Indicator */}
@@ -375,6 +435,6 @@ export default function Hero() {
 
             </div>
 
-        </section>
+        </section >
     );
 }

@@ -1,8 +1,10 @@
 "use client";
 
+import { authClient, useSession } from "@/lib/auth-client";
+import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
     HiBars3,
@@ -33,9 +35,21 @@ const navLinks = [
 export default function Navbar() {
     const pathname = usePathname();
 
+    const { data: session, isPending } = useSession()
+    // console.log("Session data in Navbar:", session, "isPending:", isPending)
+    const user = session?.user
+
     const [mobileMenu, setMobileMenu] = useState(false);
 
     const [scrolled, setScrolled] = useState(false);
+
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        await authClient.signOut()
+        router.push("/auth/signin");
+        router.refresh();
+    }
 
     useEffect(() => {
         const handleScroll = () => {
@@ -122,23 +136,55 @@ export default function Navbar() {
 
                     {/* RIGHT */}
                     <div className="hidden items-center gap-3 pr-5 lg:flex">
-                        <Link
-                            href="/signin"
-                            className="rounded-full px-5 py-3 font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
-                        >
-                            Sign In
-                        </Link>
+                        {
+                            user
+                                ?
+                                <>
 
-                        <Link
-                            href="/jobs"
-                            className="rounded-full border border-white/10 bg-white/5 px-5 py-3 font-semibold transition hover:bg-white/10"
-                        >
-                            Find Jobs
-                        </Link>
+                                    <div className="flex flex-row items-center gap-2">
+
+                                        <div className="flex flex-col items-center gap-1">
+
+                                            <div className="relative">
+                                                <Avatar>
+                                                    <Avatar.Image
+                                                        alt={user?.name}
+                                                        src={user?.image}
+                                                    />
+                                                    <Avatar.Fallback>ON</Avatar.Fallback>
+                                                </Avatar>
+                                                <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
+                                            </div>
+
+                                            <h2 className="text-blue-600">Hi: <span className="font-bold">{user?.name}</span></h2>
+
+                                        </div>
+
+                                        <Button
+                                            onClick={handleSignOut}
+                                            size="lg"
+                                            className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                        >
+                                            Sign Out
+
+                                        </Button>
+
+                                    </div>
+
+                                </>
+                                :
+                                <Link
+                                    href="/auth/signin"
+                                    className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                >
+                                    Sign In
+                                </Link>
+                        }
+
 
                         <Link
                             href="/post-job"
-                            className="rounded-full bg-linear-to-r from-sky-500 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                            className="rounded-full border border-white/10 bg-white/5 px-5 py-3 font-semibold hover:bg-white/10 shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
                         >
                             GET STARTED
                         </Link>
@@ -193,23 +239,54 @@ export default function Navbar() {
                         <div className="my-5 h-px bg-white/10"></div>
 
                         <div className="space-y-3">
-                            <Link
-                                href="/signin"
-                                className="block rounded-2xl border border-white/10 py-3 text-center font-semibold hover:bg-white/10"
-                            >
-                                Sign In
-                            </Link>
+                            {
+                                user
+                                    ?
+                                    <>
 
-                            <Link
-                                href="/jobs"
-                                className="block rounded-2xl border border-white/10 bg-white/5 py-3 text-center font-semibold"
-                            >
-                                Find Jobs
-                            </Link>
+                                        <div className="flex flex-col items-center gap-2">
+
+                                            <div className="flex flex-col items-center gap-1">
+
+                                                <div className="relative">
+                                                    <Avatar>
+                                                        <Avatar.Image
+                                                            alt={user?.name}
+                                                            src={user?.image}
+                                                        />
+                                                        <Avatar.Fallback>ON</Avatar.Fallback>
+                                                    </Avatar>
+                                                    <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
+                                                </div>
+
+                                                <h2 className="text-blue-600">Hi: <span className="font-bold">{user?.name}</span></h2>
+
+                                            </div>
+
+
+                                            <Button
+                                                onClick={handleSignOut}
+                                                size="lg"
+                                                className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                            >
+                                                Sign Out
+                                            </Button>
+
+                                        </div>
+
+                                    </>
+                                    :
+                                    <Link
+                                        href="/auth/signin"
+                                        className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                    >
+                                        Sign In
+                                    </Link>
+                            }
 
                             <Link
                                 href="/post-job"
-                                className="block rounded-2xl bg-linear-to-r from-sky-500 to-indigo-600 py-3 text-center font-bold text-white"
+                                className="block rounded-2xl mt-6 border border-white/10 bg-white/5 py-3 text-center font-bold text-white"
                             >
                                 GET STARTED
                             </Link>
