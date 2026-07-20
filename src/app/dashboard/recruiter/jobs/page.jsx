@@ -1,10 +1,15 @@
+import { getLoggedInRecruiterCompany } from '@/lib/api/companies';
 import { getCompanyJobs } from '@/lib/api/jobs';
 import React from 'react';
 import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 
 const JobRecruiterPage = async () => {
-    const companyId = 'comp_101'
-    const jobs = await getCompanyJobs(companyId)
+
+    // const companyId = 'comp_101'
+
+    const company = await getLoggedInRecruiterCompany()
+
+    const jobs = await getCompanyJobs(company._id)
     console.log("Jobs for Company", jobs)
     return (
         <div>

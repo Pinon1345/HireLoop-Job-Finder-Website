@@ -5,7 +5,7 @@ import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
     HiBars3,
     HiXMark,
@@ -32,24 +32,32 @@ const navLinks = [
     },
 ];
 
+// Helper to check client hydration safely without setState warnings
+const emptySubscribe = () => () => { };
+const useIsMounted = () =>
+    useSyncExternalStore(
+        emptySubscribe,
+        () => true,
+        () => false
+    );
+
 export default function Navbar() {
     const pathname = usePathname();
+    const mounted = useIsMounted();
 
-    const { data: session, isPending } = useSession()
-    console.log("Session data in Navbar:", session, "isPending:", isPending)
-    const user = session?.user
+    const { data: session, isPending } = useSession();
+    const user = session?.user;
 
     const [mobileMenu, setMobileMenu] = useState(false);
-
     const [scrolled, setScrolled] = useState(false);
 
     const router = useRouter();
 
     const handleSignOut = async () => {
-        await authClient.signOut()
+        await authClient.signOut();
         router.push("/auth/signin");
         router.refresh();
-    }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -57,7 +65,6 @@ export default function Navbar() {
         };
 
         window.addEventListener("scroll", handleScroll);
-
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
@@ -68,18 +75,10 @@ export default function Navbar() {
                     }`}
             >
                 <div
-                    className={`mx-auto flex w-[95%] max-w-7xl items-center justify-between rounded-3xl border border-white/10
-          
-          bg-zinc-950/70
-          backdrop-blur-2xl
-
-          transition-all duration-500
-
-          ${scrolled
+                    className={`mx-auto flex w-[95%] max-w-7xl items-center justify-between rounded-3xl border border-white/10 bg-zinc-950/70 backdrop-blur-2xl transition-all duration-500 ${scrolled
                             ? "h-16 shadow-2xl shadow-blue-500/5"
                             : "h-20 shadow-xl shadow-black/30"
-                        }
-          `}
+                        }`}
                 >
                     {/* LEFT */}
                     <div className="flex items-center gap-3 pl-6">
@@ -116,16 +115,12 @@ export default function Navbar() {
                                     <li key={item.href}>
                                         <Link
                                             href={item.href}
-                                            className={`relative mx-1 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300
-
-                      ${Active
+                                            className={`relative mx-1 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ${Active
                                                     ? "bg-white text-zinc-900 shadow-lg"
                                                     : "text-zinc-300 hover:bg-white/10 hover:text-white"
-                                                }
-                      `}
+                                                }`}
                                         >
                                             <Icon className="text-lg" />
-
                                             {item.title}
                                         </Link>
                                     </li>
@@ -136,51 +131,41 @@ export default function Navbar() {
 
                     {/* RIGHT */}
                     <div className="hidden items-center gap-3 pr-5 lg:flex">
-                        {
-                            user
-                                ?
-                                <>
-
-                                    <div className="flex flex-row items-center gap-2">
-
-                                        <div className="flex flex-col items-center gap-1">
-
-                                            <div className="relative">
-                                                <Avatar>
-                                                    <Avatar.Image
-                                                        alt={user?.name}
-                                                        src={user?.image}
-                                                    />
-                                                    <Avatar.Fallback>ON</Avatar.Fallback>
-                                                </Avatar>
-                                                <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
-                                            </div>
-
-                                            <h2 className="text-blue-600">Hi: <span className="font-bold">{user?.name}</span></h2>
-
-                                        </div>
-
-                                        <Button
-                                            onClick={handleSignOut}
-                                            size="lg"
-                                            className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
-                                        >
-                                            Sign Out
-
-                                        </Button>
-
+                        {!mounted || isPending ? (
+                            /* Hydration/Loading Placeholder */
+                            <div className="h-10 w-28 animate-pulse rounded-full bg-white/10" />
+                        ) : user ? (
+                            <div className="flex flex-row items-center gap-2">
+                                <div className="flex flex-col items-center gap-1">
+                                    <div className="relative">
+                                        <Avatar>
+                                            <Avatar.Image alt={user?.name} src={user?.image} />
+                                            <Avatar.Fallback>ON</Avatar.Fallback>
+                                        </Avatar>
+                                        <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
                                     </div>
 
-                                </>
-                                :
-                                <Link
-                                    href="/auth/signin"
+                                    <h2 className="text-blue-600">
+                                        Hi: <span className="font-bold">{user?.name}</span>
+                                    </h2>
+                                </div>
+
+                                <Button
+                                    onClick={handleSignOut}
+                                    size="lg"
                                     className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
                                 >
-                                    Sign In
-                                </Link>
-                        }
-
+                                    Sign Out
+                                </Button>
+                            </div>
+                        ) : (
+                            <Link
+                                href="/auth/signin"
+                                className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                            >
+                                Sign In
+                            </Link>
+                        )}
 
                         <Link
                             href="/post-job"
@@ -219,16 +204,12 @@ export default function Navbar() {
                                         <Link
                                             href={item.href}
                                             onClick={() => setMobileMenu(false)}
-                                            className={`flex items-center gap-3 rounded-2xl px-4 py-4 transition
-
-                      ${Active
+                                            className={`flex items-center gap-3 rounded-2xl px-4 py-4 transition ${Active
                                                     ? "bg-white text-zinc-900"
                                                     : "text-zinc-300 hover:bg-white/10 hover:text-white"
-                                                }
-                      `}
+                                                }`}
                                         >
                                             <Icon className="text-xl" />
-
                                             {item.title}
                                         </Link>
                                     </li>
@@ -239,50 +220,40 @@ export default function Navbar() {
                         <div className="my-5 h-px bg-white/10"></div>
 
                         <div className="space-y-3">
-                            {
-                                user
-                                    ?
-                                    <>
-
-                                        <div className="flex flex-col items-center gap-2">
-
-                                            <div className="flex flex-col items-center gap-1">
-
-                                                <div className="relative">
-                                                    <Avatar>
-                                                        <Avatar.Image
-                                                            alt={user?.name}
-                                                            src={user?.image}
-                                                        />
-                                                        <Avatar.Fallback>ON</Avatar.Fallback>
-                                                    </Avatar>
-                                                    <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
-                                                </div>
-
-                                                <h2 className="text-blue-600">Hi: <span className="font-bold">{user?.name}</span></h2>
-
-                                            </div>
-
-
-                                            <Button
-                                                onClick={handleSignOut}
-                                                size="lg"
-                                                className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
-                                            >
-                                                Sign Out
-                                            </Button>
-
+                            {!mounted || isPending ? (
+                                <div className="h-10 w-full animate-pulse rounded-2xl bg-white/10" />
+                            ) : user ? (
+                                <div className="flex flex-col items-center gap-2">
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="relative">
+                                            <Avatar>
+                                                <Avatar.Image alt={user?.name} src={user?.image} />
+                                                <Avatar.Fallback>ON</Avatar.Fallback>
+                                            </Avatar>
+                                            <span className="absolute right-0 bottom-0 size-3 rounded-full bg-green-500 ring-2 ring-background" />
                                         </div>
 
-                                    </>
-                                    :
-                                    <Link
-                                        href="/auth/signin"
-                                        className="rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                        <h2 className="text-blue-600">
+                                            Hi: <span className="font-bold">{user?.name}</span>
+                                        </h2>
+                                    </div>
+
+                                    <Button
+                                        onClick={handleSignOut}
+                                        size="lg"
+                                        className="w-full rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
                                     >
-                                        Sign In
-                                    </Link>
-                            }
+                                        Sign Out
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Link
+                                    href="/auth/signin"
+                                    className="block text-center rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
+                                >
+                                    Sign In
+                                </Link>
+                            )}
 
                             <Link
                                 href="/post-job"
