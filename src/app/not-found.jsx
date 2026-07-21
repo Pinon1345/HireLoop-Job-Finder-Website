@@ -34,26 +34,27 @@ export default function NotFound() {
                 </p>
 
                 {/* Buttons */}
-                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+                <div className="flex flex-col sm:flex-row sm:min-w-xl justify-center gap-4 mt-10">
 
-                    <Button
-                        as={Link}
+                    <Link
                         href="/"
-                        startContent={<FaArrowLeft />}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                        className="block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-2xl"
                     >
-                        Back to Home
-                    </Button>
+                        <div className="flex flex-row justify-center items-center gap-2">
+                            <FaArrowLeft></FaArrowLeft>
+                            <h2>Back to Home</h2>
+                        </div>
+                    </Link>
 
-                    <Button
-                        as={Link}
+                    <Link
                         href="/jobs"
-                        variant="bordered"
-                        startContent={<FaSearch />}
-                        className="border-zinc-700 text-white hover:bg-zinc-800"
+                        className="block border-zinc-700 text-white hover:bg-zinc-800 px-4 py-2 rounded-2xl border"
                     >
-                        Browse Jobs
-                    </Button>
+                        <div className="flex flex-row justify-center items-center gap-2">
+                            <FaSearch></FaSearch>
+                            <h2>Browse Jobs</h2>
+                        </div>
+                    </Link>
 
                 </div>
 
