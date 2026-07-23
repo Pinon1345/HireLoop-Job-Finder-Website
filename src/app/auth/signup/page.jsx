@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Input,
     Button,
@@ -29,6 +29,9 @@ import { authClient } from "@/lib/auth-client"; // Kept authClient import for so
 
 export default function SignUp() {
     const router = useRouter();
+
+    const searchParams = useSearchParams()
+    const redirectTo = searchParams.get('redirect') || '/';
 
     const [formData, setFormData] = useState({
         name: "",
@@ -93,6 +96,10 @@ export default function SignUp() {
         const emailErr = validateField("email", formData.email);
         const passwordErr = validateField("password", formData.password);
 
+        // ✅ CORRECT: Reference 'role' from 'formData'
+        const plan = formData.role === "seeker" ? "seeker_free" : "recruiter_free";
+
+
         if (emailErr || passwordErr) {
             toast.error("Please fix the errors in the form before submitting.");
             return;
@@ -108,7 +115,8 @@ export default function SignUp() {
                 password: formData.password,
                 name: formData.name,
                 image: formData.imageUrl || undefined,
-                role: formData.role
+                role: formData.role,
+                plan
             });
 
             if (error) {
@@ -120,7 +128,7 @@ export default function SignUp() {
             // FIX: Wait a moment for the session to be set, then redirect
 
             setTimeout(() => {
-                router.push("/");
+                router.push(redirectTo);
             }, 500);
 
         } catch (error) {
@@ -247,8 +255,8 @@ export default function SignUp() {
                                 type="button"
                                 onClick={() => setFormData(prev => ({ ...prev, role: "seeker" }))}
                                 className={`rounded-xl border p-4 transition ${formData.role === "seeker"
-                                        ? "border-sky-500 bg-sky-500/10"
-                                        : "border-zinc-700"
+                                    ? "border-sky-500 bg-sky-500/10"
+                                    : "border-zinc-700"
                                     }`}
                             >
                                 <h3 className="font-semibold">👤 Job Seeker</h3>
@@ -261,8 +269,8 @@ export default function SignUp() {
                                 type="button"
                                 onClick={() => setFormData(prev => ({ ...prev, role: "recruiter" }))}
                                 className={`rounded-xl border p-4 transition ${formData.role === "recruiter"
-                                        ? "border-sky-500 bg-sky-500/10"
-                                        : "border-zinc-700"
+                                    ? "border-sky-500 bg-sky-500/10"
+                                    : "border-zinc-700"
                                     }`}
                             >
                                 <h3 className="font-semibold">💼 Recruiter</h3>
@@ -304,7 +312,7 @@ export default function SignUp() {
                     <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
                         Already have an account?{" "}
                         <Link
-                            href="/auth/signin"
+                            href={`/auth/signin?redirect=${redirectTo}`}
                             className="font-semibold text-primary hover:underline transition-all text-blue-600"
                         >
                             Sign In

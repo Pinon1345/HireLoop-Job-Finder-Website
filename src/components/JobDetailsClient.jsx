@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,7 +12,7 @@ import {
     HiArrowLeft
 } from "react-icons/hi2";
 
-export default function JobDetailsClient({ job }) {
+export default function JobDetailsClient({ job, id }) {
     if (!job) {
         return (
             <div className="mx-auto max-w-4xl py-20 text-center text-zinc-400">
@@ -27,12 +28,12 @@ export default function JobDetailsClient({ job }) {
         );
     }
 
-    const handleApplyNow = () => {
+    // const handleApplyNow = () => {
 
-        // Handle application logic (open modal, redirect to form, etc.)
+    //     // Handle application logic (open modal, redirect to form, etc.)
 
-        alert(`Applying for: ${job.jobTitle} at ${job.companyName}`);
-    };
+    //     alert(`Applying for: ${job.jobTitle} at ${job.companyName}`);
+    // };
 
     return (
         <div className="mx-auto max-w-5xl px-4 py-8 text-zinc-100">
@@ -90,12 +91,14 @@ export default function JobDetailsClient({ job }) {
                     {/* Apply Button */}
 
                     <div className="shrink-0 pt-4 md:pt-0">
-                        <button
-                            onClick={handleApplyNow}
-                            className="w-full rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-indigo-500/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-indigo-500/40 active:translate-y-0 md:w-auto"
-                        >
-                            Apply Now
-                        </button>
+                        <Link href={`/jobs/${id}/apply`} className="block">
+                            <Button
+                                // onClick={handleApplyNow}
+                                className="w-full rounded-full bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-indigo-500/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-indigo-500/40 active:translate-y-0 md:w-auto"
+                            >
+                                Apply For This Job
+                            </Button>
+                        </Link>
                     </div>
                 </div>
 

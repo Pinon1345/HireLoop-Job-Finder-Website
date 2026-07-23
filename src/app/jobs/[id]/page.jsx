@@ -7,7 +7,7 @@ const JobDetailsPage = async ({ params }) => {
     const { id } = await params;
     const job = await getJobById(id);
 
-    return <JobDetailsClient job={job} />;
+    return <JobDetailsClient job={job} id={id} />;
 };
 
 export default JobDetailsPage;

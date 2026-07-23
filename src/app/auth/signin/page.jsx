@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Input,
     Button,
@@ -24,6 +24,9 @@ import { authClient } from "@/lib/auth-client"; // Adjust path to your client fi
 
 export default function SignIn() {
     const router = useRouter();
+
+    const searchParams = useSearchParams()
+    const redirectTo = searchParams.get('redirect') || '/'
 
     const [formData, setFormData] = useState({
         email: "",
@@ -103,7 +106,7 @@ export default function SignIn() {
 
             // Refresh the router so the session is re-fetched
             router.refresh();
-            router.push("/");
+            router.push(redirectTo);
 
         } catch (error) {
             toast.error(error.message);
@@ -222,7 +225,7 @@ export default function SignIn() {
                     <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
                         Do not have an account yet?{" "}
                         <Link
-                            href="/auth/signup"
+                            href={`/auth/signup?redirect=${redirectTo}`}
                             className="font-semibold text-primary hover:underline transition-all text-blue-600"
                         >
                             Sign Up
