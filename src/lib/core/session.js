@@ -1,5 +1,6 @@
 import { headers } from "next/headers"
 import { auth } from "../auth"
+import { redirect } from "next/navigation";
 
 
 export const getUserSession = async () => {
@@ -7,4 +8,15 @@ export const getUserSession = async () => {
         headers: await headers() // some endpoints might require headers
     })
     return session?.user || null;
+}
+
+
+export const requiredRole = async (role) => {
+
+    const user = await getUserSession();
+
+    if (user.role !== role) {
+        redirect('/unauthorized')
+    }
+    return user;
 }

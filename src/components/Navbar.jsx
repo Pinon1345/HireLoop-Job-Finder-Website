@@ -5,7 +5,7 @@ import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore, useMemo } from "react";
 import {
     HiBars3,
     HiXMark,
@@ -13,8 +13,9 @@ import {
     HiBuildingOffice2,
     HiCurrencyDollar,
 } from "react-icons/hi2";
+import { MdDashboardCustomize } from "react-icons/md";
 
-const navLinks = [
+const baseNavLinks = [
     {
         title: "Browse Jobs",
         href: "/jobs",
@@ -32,7 +33,11 @@ const navLinks = [
     },
 ];
 
-// Helper to check client hydration safely without setState warnings
+const dashboardLinks = {
+    seeker: "/dashboard/seeker",
+    recruiter: "/dashboard/recruiter",
+};
+
 const emptySubscribe = () => () => { };
 const useIsMounted = () =>
     useSyncExternalStore(
@@ -47,6 +52,25 @@ export default function Navbar() {
 
     const { data: session, isPending } = useSession();
     const user = session?.user;
+
+    // Safely derive nav links without mutating global state
+    const navLinks = useMemo(() => {
+        const links = [...baseNavLinks];
+
+        if (user?.email) {
+            // Normalize role string (handles "RECRUITER", "Recruiter", "recruiter")
+            const userRole = user?.role?.toLowerCase() || "seeker";
+            const dashboardHref = dashboardLinks[userRole] || dashboardLinks.seeker;
+
+            links.push({
+                title: "Dashboard",
+                href: dashboardHref,
+                icon: MdDashboardCustomize,
+            });
+        }
+
+        return links;
+    }, [user]);
 
     const [mobileMenu, setMobileMenu] = useState(false);
     const [scrolled, setScrolled] = useState(false);
@@ -76,8 +100,8 @@ export default function Navbar() {
             >
                 <div
                     className={`mx-auto flex w-[95%] max-w-7xl items-center justify-between rounded-3xl border border-white/10 bg-zinc-950/70 backdrop-blur-2xl transition-all duration-500 ${scrolled
-                            ? "h-16 shadow-2xl shadow-blue-500/5"
-                            : "h-20 shadow-xl shadow-black/30"
+                        ? "h-16 shadow-2xl shadow-blue-500/5"
+                        : "h-20 shadow-xl shadow-black/30"
                         }`}
                 >
                     {/* LEFT */}
@@ -116,8 +140,8 @@ export default function Navbar() {
                                         <Link
                                             href={item.href}
                                             className={`relative mx-1 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ${Active
-                                                    ? "bg-white text-zinc-900 shadow-lg"
-                                                    : "text-zinc-300 hover:bg-white/10 hover:text-white"
+                                                ? "bg-white text-zinc-900 shadow-lg"
+                                                : "text-zinc-300 hover:bg-white/10 hover:text-white"
                                                 }`}
                                         >
                                             <Icon className="text-lg" />
@@ -132,7 +156,6 @@ export default function Navbar() {
                     {/* RIGHT */}
                     <div className="hidden items-center gap-3 pr-5 lg:flex">
                         {!mounted || isPending ? (
-                            /* Hydration/Loading Placeholder */
                             <div className="h-10 w-28 animate-pulse rounded-full bg-white/10" />
                         ) : user ? (
                             <div className="flex flex-row items-center gap-2">
@@ -167,12 +190,6 @@ export default function Navbar() {
                             </Link>
                         )}
 
-                        <Link
-                            href="/post-job"
-                            className="rounded-full border border-white/10 bg-white/5 px-5 py-3 font-semibold hover:bg-white/10 shadow-lg shadow-sky-500/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-sky-500/50"
-                        >
-                            GET STARTED
-                        </Link>
                     </div>
 
                     {/* MOBILE BUTTON */}
@@ -205,8 +222,8 @@ export default function Navbar() {
                                             href={item.href}
                                             onClick={() => setMobileMenu(false)}
                                             className={`flex items-center gap-3 rounded-2xl px-4 py-4 transition ${Active
-                                                    ? "bg-white text-zinc-900"
-                                                    : "text-zinc-300 hover:bg-white/10 hover:text-white"
+                                                ? "bg-white text-zinc-900"
+                                                : "text-zinc-300 hover:bg-white/10 hover:text-white"
                                                 }`}
                                         >
                                             <Icon className="text-xl" />
@@ -256,7 +273,7 @@ export default function Navbar() {
                             )}
 
                             <Link
-                                href="/post-job"
+                                href="/jobs"
                                 className="block rounded-2xl mt-6 border border-white/10 bg-white/5 py-3 text-center font-bold text-white"
                             >
                                 GET STARTED

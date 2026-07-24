@@ -2,9 +2,18 @@
 import { Bell, Envelope, Briefcase, Gear, House, LayoutSideContentLeft, Magnifier, Person } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
+import { LuBookmarkCheck, LuFileUp, LuLayoutDashboard } from "react-icons/lu";
+import { FiFileText } from "react-icons/fi";
+import { BiCreditCard, BiLogOut } from "react-icons/bi";
+import { CiSettings } from "react-icons/ci";
+import { getUserSession } from "@/lib/core/session";
+import { HiSearch } from "react-icons/hi";
 
-export function DashboardSidebar() {
-    const navItems = [
+export async function DashboardSidebar() {
+
+    const user = await getUserSession()
+
+    const recruiterNavLinks = [
         { icon: House, href: "/dashboard/recruiter", label: "Home" },
         { icon: Magnifier, href: "/dashboard/recruiter/jobs", label: "Jobs" },
         { icon: Bell, href: "/dashboard/recruiter/jobs/new", label: "Post New Job" },
@@ -13,6 +22,24 @@ export function DashboardSidebar() {
         { icon: Person, href: "/user-profile", label: "User Profile" },
         { icon: Gear, href: "/settings", label: "Settings" },
     ];
+
+    const seekerNavLinks = [
+        { icon: LuLayoutDashboard, href: "/dashboard/seeker", label: "Dashboard" },
+        { icon: HiSearch, href: "/dashboard/seeker/jobs", label: "Jobs" },
+        { icon: LuBookmarkCheck, href: "/dashboard/seeker/saved-jobs", label: "Saved Jobs" },
+        { icon: FiFileText, href: "/dashboard/seeker/applications", label: "Applications" },
+        { icon: BiCreditCard, href: "/dashboard/seeker/billing", label: "Billing" },
+        { icon: CiSettings, href: "/dashboard/seeker/settings", label: "Settings" },
+        { icon: LuFileUp, href: "/dashboard/seeker/resume/new", label: "Post Resume" },
+        { icon: BiLogOut, href: "/logout", label: "Logout" },
+    ];
+
+    const navLinksMap = {
+        seeker: seekerNavLinks,
+        recruiter: recruiterNavLinks
+    }
+
+    const navItems = navLinksMap[user?.role || "seeker"]
 
     const navContent = <nav className="flex flex-col gap-1">
         {navItems.map((item) => (

@@ -39,6 +39,7 @@ const JobApply = ({ job, applicant }) => {
                 jobId: job?._id,
                 jobTitle: job?.jobTitle,
                 companyName: job?.companyName,
+                status: 'Applied',
                 applicantId: applicant?._id,
                 applicantName: applicant?.name || `${data.firstName || ''} ${data.lastName || ''}`,
                 applicantEmail: applicant?.email || data.email,
