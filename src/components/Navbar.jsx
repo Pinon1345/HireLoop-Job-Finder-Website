@@ -36,6 +36,7 @@ const baseNavLinks = [
 const dashboardLinks = {
     seeker: "/dashboard/seeker",
     recruiter: "/dashboard/recruiter",
+    admin: "/dashboard/admin",
 };
 
 const emptySubscribe = () => () => { };

@@ -33,7 +33,7 @@ const CompanyProfile = ({ onClose, recruiter, recruiterCompany }) => {
         employeeRange: "1-10 employees",
         logoUrl: "",
         description: "",
-        status: "Pending",
+        status: recruiterCompany && recruiterCompany.status ? recruiterCompany.status : "Pending",
         recruiterId: recruiter?.id || recruiter?._id,
     };
 

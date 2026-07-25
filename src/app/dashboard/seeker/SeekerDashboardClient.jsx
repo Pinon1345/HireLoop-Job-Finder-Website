@@ -29,14 +29,14 @@ export default function SeekerDashboardClient({ user, applications = [] }) {
     const isMounted = useIsMounted();
 
     // Metrics dynamic calculation (with default mock fallbacks for missing data)
-    const totalApplied = applications.length || 24;
+    const totalApplied = applications.length || 0;
     const savedJobsCount = 12;
     const interviewsCount = applications.filter((a) => a.status?.toLowerCase() === 'interview').length || 3;
     const offersCount = applications.filter((a) => a.status?.toLowerCase() === 'offered').length || 1;
 
     // Application status breakdown
     const statusCounts = {
-        applied: applications.filter((a) => !a.status || a.status.toLowerCase() === 'applied').length || 10,
+        applied: applications.filter((a) => !a.status || a.status.toLowerCase() === 'applied').length || 0,
         underReview: applications.filter((a) => a.status?.toLowerCase() === 'review').length || 6,
         shortlisted: applications.filter((a) => a.status?.toLowerCase() === 'shortlisted').length || 5,
         rejected: applications.filter((a) => a.status?.toLowerCase() === 'rejected').length || 2,

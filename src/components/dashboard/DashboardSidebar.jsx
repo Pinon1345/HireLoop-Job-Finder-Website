@@ -2,7 +2,7 @@
 import { Bell, Envelope, Briefcase, Gear, House, LayoutSideContentLeft, Magnifier, Person } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
-import { LuBookmarkCheck, LuFileUp, LuLayoutDashboard } from "react-icons/lu";
+import { LuBookmarkCheck, LuBriefcase, LuBuilding2, LuCreditCard, LuFileUp, LuLayoutDashboard, LuSettings, LuUsers } from "react-icons/lu";
 import { FiFileText } from "react-icons/fi";
 import { BiCreditCard, BiLogOut } from "react-icons/bi";
 import { CiSettings } from "react-icons/ci";
@@ -34,9 +34,20 @@ export async function DashboardSidebar() {
         { icon: BiLogOut, href: "/logout", label: "Logout" },
     ];
 
+    const adminNavLinks = [
+        { icon: LuLayoutDashboard, href: "/dashboard/admin", label: "Dashboard" },
+        { icon: LuUsers, href: "/dashboard/admin/users", label: "Users" },
+        { icon: LuBuilding2, href: "/dashboard/admin/companies", label: "Companies" },
+        { icon: LuBriefcase, href: "/dashboard/admin/jobs", label: "Jobs" },
+        { icon: LuCreditCard, href: "/dashboard/admin/payments", label: "Payments" },
+        { icon: LuSettings, href: "/dashboard/admin/settings", label: "Settings" },
+        { icon: BiLogOut, href: "/logout", label: "Logout" },
+    ];
+
     const navLinksMap = {
         seeker: seekerNavLinks,
-        recruiter: recruiterNavLinks
+        recruiter: recruiterNavLinks,
+        admin: adminNavLinks,
     }
 
     const navItems = navLinksMap[user?.role || "seeker"]

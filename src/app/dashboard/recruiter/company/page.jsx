@@ -10,7 +10,7 @@ const CompanyPage = async () => {
 
     const company = await getRecruiterCompany(user?.id);
 
-    // console.log("Company from API:", company);
+    console.log("Company Before Create:", company);
 
     return (
         <div>
