@@ -10,8 +10,7 @@ export default function JobFilter() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // Read current URL search parameters
-    const searchQuery = searchParams.get("q") || "";
+    const searchQuery = searchParams.get("search") || "";
     const selectedCategory = searchParams.get("category") || "All";
     const selectedType = searchParams.get("type") || "All";
     const selectedRemote = searchParams.get("remote") || "All";
@@ -20,16 +19,25 @@ export default function JobFilter() {
     const jobTypes = ["All", "Full-time", "Part-time", "Contract", "Internship"];
     const workTypes = ["All", "Remote", "On-site"];
 
-    // Updates the Next.js search parameters cleanly
     const updateQueryParam = (key, val) => {
         const params = new URLSearchParams(searchParams.toString());
 
-        // val is directly the key/string from HeroUI Select
-        if (val && val !== "All" && val !== "") {
-            params.set(key, val);
+        let cleanValue = val;
+
+        // Extract raw string key if HeroUI returns a Set or object
+        if (val && typeof val === "object") {
+            const firstItem = Array.from(val)[0];
+            cleanValue = firstItem ? String(firstItem) : "All";
+        }
+
+        if (cleanValue && cleanValue !== "All" && cleanValue !== "") {
+            params.set(key, cleanValue);
         } else {
             params.delete(key);
         }
+
+        params.delete("page"); // Reset pagination
+
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
@@ -46,7 +54,7 @@ export default function JobFilter() {
                             type="text"
                             placeholder="Search by job title, company, or keyword..."
                             value={searchQuery}
-                            onChange={(e) => updateQueryParam("q", e.target.value)}
+                            onChange={(e) => updateQueryParam("search", e.target.value)}
                             className="bg-transparent text-white placeholder-zinc-500 outline-none text-sm w-full"
                         />
                     </InputGroup>
@@ -58,8 +66,8 @@ export default function JobFilter() {
                 {/* Category Select */}
                 <Select
                     className="w-full"
-                    value={selectedCategory}
-                    onChange={(val) => updateQueryParam("category", val)}
+                    selectedKeys={new Set([selectedCategory])}
+                    onSelectionChange={(keys) => updateQueryParam("category", keys)}
                 >
                     <Select.Trigger className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs px-4 py-2.5 rounded-2xl flex items-center justify-between w-full hover:border-zinc-700">
                         <div className="flex items-center gap-2">
@@ -87,8 +95,8 @@ export default function JobFilter() {
                 {/* Job Type Select */}
                 <Select
                     className="w-full"
-                    value={selectedType}
-                    onChange={(val) => updateQueryParam("type", val)}
+                    selectedKeys={new Set([selectedType])}
+                    onSelectionChange={(keys) => updateQueryParam("type", keys)}
                 >
                     <Select.Trigger className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs px-4 py-2.5 rounded-2xl flex items-center justify-between w-full hover:border-zinc-700">
                         <Select.Value placeholder="Job Type" />
@@ -110,11 +118,11 @@ export default function JobFilter() {
                     </Select.Popover>
                 </Select>
 
-                {/* Remote Filter */}
+                {/* Remote Select */}
                 <Select
                     className="w-full"
-                    value={selectedRemote}
-                    onChange={(val) => updateQueryParam("remote", val)}
+                    selectedKeys={new Set([selectedRemote])}
+                    onSelectionChange={(keys) => updateQueryParam("remote", keys)}
                 >
                     <Select.Trigger className="bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs px-4 py-2.5 rounded-2xl flex items-center justify-between w-full hover:border-zinc-700">
                         <Select.Value placeholder="Work Location" />
