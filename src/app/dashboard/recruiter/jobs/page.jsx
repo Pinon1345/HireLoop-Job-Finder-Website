@@ -7,10 +7,12 @@ const JobRecruiterPage = async () => {
 
     // const companyId = 'comp_101'
 
-    const company = await getLoggedInRecruiterCompany()
+    const company = await getLoggedInRecruiterCompany();
 
-    const jobs = await getCompanyJobs(company._id)
-    console.log("Jobs for Company", jobs)
+    const jobsData = await getCompanyJobs(company._id);
+    const jobs = Array.isArray(jobsData) ? jobsData : jobsData?.jobs || [];
+
+    console.log("Jobs for Company", jobs);
     return (
         <div>
             <div className='container w-11/12 mx-auto mt-4 mb-6 space-y-2'>
