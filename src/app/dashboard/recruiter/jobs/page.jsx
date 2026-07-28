@@ -12,7 +12,7 @@ const JobRecruiterPage = async () => {
     const jobsData = await getCompanyJobs(company._id);
     const jobs = Array.isArray(jobsData) ? jobsData : jobsData?.jobs || [];
 
-    console.log("Jobs for Company", jobs);
+    console.log("Creating New Jobs for Company", jobs);
     return (
         <div>
             <div className='container w-11/12 mx-auto mt-4 mb-6 space-y-2'>
