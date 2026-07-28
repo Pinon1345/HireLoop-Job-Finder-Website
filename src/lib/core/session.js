@@ -28,7 +28,7 @@ export const requiredRole = async (role) => {
 
     const user = await getUserSession();
 
-    if (user.role !== role) {
+    if (user.userRole !== role) {
         redirect('/unauthorized')
     }
     return user;

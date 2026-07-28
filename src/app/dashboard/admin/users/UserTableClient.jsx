@@ -31,13 +31,13 @@ const UserTableClient = ({ users: initialUsers = [] }) => {
     // Filtered Users List
     const filteredUsers = usersList.filter((user) => {
         if (selectedRole === 'All') return true;
-        return user.role?.toLowerCase() === selectedRole.toLowerCase();
+        return user.userRole?.toLowerCase() === selectedRole.toLowerCase();
     });
 
     // 1. Triggered when clicking "Make Seeker / Make Recruiter"
     const openRoleChangeModal = (user) => {
         const userId = user._id?.$oid || user._id || user.id;
-        const currentRole = user.role;
+        const currentRole = user.userRole;
         const targetRole = currentRole?.toLowerCase() === 'seeker' ? 'Recruiter' : 'Seeker';
 
         setPendingRoleChange({
@@ -212,7 +212,7 @@ const UserTableClient = ({ users: initialUsers = [] }) => {
                             <Table.Body>
                                 {filteredUsers.map((user) => {
                                     const id = user._id?.$oid || user._id || user.id;
-                                    const isRecruiter = user.role?.toLowerCase() === 'recruiter';
+                                    const isRecruiter = user.userRole?.toLowerCase() === 'recruiter';
                                     const isActive = user.status?.toLowerCase() === 'active';
 
                                     return (
@@ -239,7 +239,7 @@ const UserTableClient = ({ users: initialUsers = [] }) => {
                                                     ) : (
                                                         <FiUser className="w-3 h-3 text-zinc-400" />
                                                     )}
-                                                    {user.role || 'Seeker'}
+                                                    {user.userRole || 'Seeker'}
                                                 </span>
                                             </Table.Cell>
 

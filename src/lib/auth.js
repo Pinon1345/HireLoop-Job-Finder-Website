@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { admin } from "better-auth/plugins";
+import { authAdditionalFields } from "./auth-schema";
 
 const client = new MongoClient(process.env.MONGO_DB_URI);
 
@@ -30,11 +31,14 @@ export const auth = betterAuth({
 
     user: {
         additionalFields: {
-            role: {
-                default: "seeker",
+            userRole: {
+                type: "string",
+                defaultValue: "seeker",
             },
+
             plan: {
-                default: "seeker_free",
+                type: "string",
+                defaultValue: "seeker_free",
             }
         }
     },

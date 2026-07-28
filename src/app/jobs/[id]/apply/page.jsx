@@ -25,7 +25,7 @@ const ApplyPage = async ({ params }) => {
 
     // Non-seeker Warning Card
 
-    if (user.role !== 'seeker') {
+    if (user.userRole !== 'seeker') {
         return (
             <div className="container max-w-2xl mx-auto my-16 px-6">
                 <div className="flex flex-col items-center justify-center gap-4 text-center p-8 bg-zinc-900/80 backdrop-blur-md rounded-2xl border border-zinc-800 shadow-xl shadow-blue-900/20">

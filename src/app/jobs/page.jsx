@@ -1,57 +1,74 @@
+import React, { Suspense } from "react";
 import JobCard from "@/components/jobs/JobCard";
 import JobFilter from "@/components/jobs/JobFilter";
 import { getJobs } from "@/lib/api/jobs";
 import Link from "next/link";
 
 export default async function JobList({ searchParams }) {
-    // 1. Await searchParams
+    // 1. Await searchParams for Next.js 15+
     const params = await searchParams;
 
     // 2. Extract query parameters
     const currentPage = Math.max(1, parseInt(params?.page || "1", 10));
-    const search = params?.search || "";
-    const category = params?.category || "All";
-    const type = params?.type || "All";
-    const remote = params?.remote || "All";
+    const search = params?.search?.trim() || "";
+    const category = params?.category || "";
+    const type = params?.type || "";
+    const remote = params?.remote || "";
 
-    // 3. Build API query string (forwarding filters and current page to Express)
+    // 3. Build sanitized query parameters (Ignore placeholders)
     const queryParams = new URLSearchParams();
-    if (search) queryParams.set("search", search);
-    if (category !== "All") queryParams.set("category", category);
-    if (type !== "All") queryParams.set("type", type);
-    if (remote !== "All") queryParams.set("remote", remote);
 
-    // Add pagination params for the backend query
+    if (search) queryParams.set("search", search);
+
+    if (category && category !== "All" && category !== "Select an item") {
+        queryParams.set("category", category);
+    }
+
+    if (type && type !== "All" && type !== "Select an item") {
+        queryParams.set("type", type);
+    }
+
+    if (remote && remote !== "All" && remote !== "Select an item") {
+        queryParams.set("remote", remote);
+    }
+
+    // Pagination
     queryParams.set("page", currentPage.toString());
     queryParams.set("limit", "10");
 
-    // 4. Fetch jobs from backend
+    // 4. Fetch jobs safely
     const data = await getJobs(queryParams.toString());
 
-    // Safely extract backend values (handles both object response and legacy array fallback)
+    // Extract values cleanly
     const jobs = Array.isArray(data) ? data : data?.jobs || [];
     const totalItems = data?.total ?? jobs.length;
     const totalPages = data?.totalPages ?? 1;
 
-    // Item count calculation for summary
+    // Count bounds for displaying summary
     const itemsPerPage = 10;
     const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-    // Helper to keep active filters intact when clicking page links
+    // Pagination helper
     const createPageURL = (pageNumber) => {
         const urlParams = new URLSearchParams();
         if (search) urlParams.set("search", search);
-        if (category !== "All") urlParams.set("category", category);
-        if (type !== "All") urlParams.set("type", type);
-        if (remote !== "All") urlParams.set("remote", remote);
+        if (category && category !== "All" && category !== "Select an item") urlParams.set("category", category);
+        if (type && type !== "All" && type !== "Select an item") urlParams.set("type", type);
+        if (remote && remote !== "All" && remote !== "Select an item") urlParams.set("remote", remote);
         urlParams.set("page", pageNumber.toString());
         return `?${urlParams.toString()}`;
     };
 
     return (
         <div className="p-8 bg-black min-h-screen text-white">
-            <JobFilter />
+            <Suspense fallback={
+                <div className="bg-zinc-950 border border-zinc-800 p-5 rounded-3xl mb-8 text-zinc-500 text-sm">
+                    Loading filters...
+                </div>
+            }>
+                <JobFilter />
+            </Suspense>
 
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">
@@ -59,7 +76,7 @@ export default async function JobList({ searchParams }) {
                 </h1>
             </div>
 
-            {/* Render Job Cards */}
+            {/* Job Cards Display */}
             {jobs.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {jobs.map((job) => {
@@ -73,7 +90,7 @@ export default async function JobList({ searchParams }) {
                 </div>
             )}
 
-            {/* Server-Side Pagination Bar */}
+            {/* Pagination Controls */}
             {totalPages > 1 && (
                 <div className="flex flex-col sm:flex-row items-center justify-between border-t border-zinc-800 pt-6 gap-4">
                     <p className="text-sm text-zinc-400">
@@ -83,7 +100,6 @@ export default async function JobList({ searchParams }) {
                     </p>
 
                     <div className="flex items-center gap-2">
-                        {/* Previous Link */}
                         {currentPage > 1 ? (
                             <Link
                                 href={createPageURL(currentPage - 1)}
@@ -97,7 +113,6 @@ export default async function JobList({ searchParams }) {
                             </span>
                         )}
 
-                        {/* Page Numbers */}
                         <div className="flex items-center gap-1">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
                                 const isActive = pageNum === currentPage;
@@ -116,7 +131,6 @@ export default async function JobList({ searchParams }) {
                             })}
                         </div>
 
-                        {/* Next Link */}
                         {currentPage < totalPages ? (
                             <Link
                                 href={createPageURL(currentPage + 1)}

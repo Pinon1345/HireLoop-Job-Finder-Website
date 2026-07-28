@@ -1,11 +1,13 @@
 "use client";
 
+import React, { Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TextField, InputGroup, Select, ListBox } from "@heroui/react";
 import { FiSearch } from "react-icons/fi";
 import { BiFilterAlt } from "react-icons/bi";
 
-export default function JobFilter() {
+// Internal Component containing useSearchParams()
+function JobFilterContent() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -145,5 +147,18 @@ export default function JobFilter() {
                 </Select>
             </div>
         </div>
+    );
+}
+
+// Default export wrapper that satisfies Next.js Suspense requirements on Vercel
+export default function JobFilter() {
+    return (
+        <Suspense fallback={
+            <div className="bg-zinc-950 border border-zinc-800/80 p-5 rounded-3xl mb-8 text-zinc-500 text-sm flex items-center justify-center">
+                Loading filters...
+            </div>
+        }>
+            <JobFilterContent />
+        </Suspense>
     );
 }
